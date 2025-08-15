@@ -13,21 +13,18 @@
         font-family: Arial, sans-serif;
         touch-action: none;
         min-height: 100vh;
-        height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: fixed;
-        width: 100%;
     }
     #gameContainer {
         position: relative;
-        width: 100vw;
-        height: 100vh;
+        width: 400px;
+        height: 800px;
         background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 95%, #228B22 95%, #228B22 100%);
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
+        border: 3px solid #2E7D32;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         overflow: hidden;
     }
     #gameTitle {
@@ -160,44 +157,45 @@
     /* Mobile specific styles */
     @media (max-width: 767px) {
         #gameContainer {
-            width: 100vw;
-            height: 100vh;
+            width: 90vw;
+            height: 80vh;
+            max-width: 350px;
+            max-height: 600px;
         }
         
         #gameTitle {
-            font-size: 18px;
-            padding: 8px 16px;
-            top: 15px;
+            font-size: 16px;
+            padding: 6px 12px;
+            top: 10px;
         }
         
         #scoreBoard {
-            font-size: 14px;
-            padding: 8px 12px;
-            top: 70px;
-            left: 8px;
+            font-size: 12px;
+            padding: 6px 10px;
+            top: 60px;
+            left: 5px;
         }
         
         #levelIndicator {
-            font-size: 14px;
-            padding: 8px 12px;
-            top: 70px;
-            right: 8px;
+            font-size: 12px;
+            padding: 6px 10px;
+            top: 60px;
+            right: 5px;
         }
         
         .control-btn {
-            width: 80px;
-            height: 80px;
-            font-size: 32px;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
         }
         
         #controls {
-            bottom: 40px;
-            gap: 25px;
+            bottom: 30px;
+            gap: 20px;
         }
         
         body {
-            height: 100vh;
-            overflow: hidden;
+            padding: 10px;
         }
     }
     #gameOver {
