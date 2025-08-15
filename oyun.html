@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Süt Toplama Oyunu</title>
+<title>Lamumu Milk Game</title>
 <style>
     body {
         margin: 0;
@@ -13,20 +13,21 @@
         font-family: Arial, sans-serif;
         touch-action: none;
         min-height: 100vh;
+        height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
+        position: fixed;
+        width: 100%;
     }
     #gameContainer {
         position: relative;
-        width: 90vw;
-        max-width: 400px;
-        height: 80vh;
-        max-height: 800px;
+        width: 100vw;
+        height: 100vh;
         background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 95%, #228B22 95%, #228B22 100%);
-        border: 3px solid #2E7D32;
-        border-radius: 15px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
         overflow: hidden;
     }
     #gameTitle {
@@ -93,32 +94,31 @@
 
     #scoreBoard {
         position: absolute;
-        bottom: 20px;
+        top: 80px;
         left: 10px;
-        color: white;
-        font-size: 14px;
-        font-weight: bold;
-        background-color: rgba(0,0,0,0.7);
-        padding: 8px 12px;
-        border-radius: 8px;
-        z-index: 15;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255,255,255,0.2);
-    }
-    #levelIndicator {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
         color: white;
         font-size: 16px;
         font-weight: bold;
-        background-color: rgba(0,0,0,0.7);
-        padding: 8px 16px;
-        border-radius: 20px;
+        background-color: rgba(0,0,0,0.8);
+        padding: 10px 15px;
+        border-radius: 10px;
         z-index: 15;
         backdrop-filter: blur(5px);
-        border: 1px solid rgba(255,255,255,0.2);
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+    #levelIndicator {
+        position: absolute;
+        top: 80px;
+        right: 10px;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: rgba(0,0,0,0.8);
+        padding: 10px 15px;
+        border-radius: 10px;
+        z-index: 15;
+        backdrop-filter: blur(5px);
+        border: 2px solid rgba(255,255,255,0.3);
     }
     #controls {
         position: absolute;
@@ -160,34 +160,44 @@
     /* Mobile specific styles */
     @media (max-width: 767px) {
         #gameContainer {
-            width: 95vw;
-            height: 85vh;
+            width: 100vw;
+            height: 100vh;
         }
         
         #gameTitle {
-            font-size: 20px;
+            font-size: 18px;
             padding: 8px 16px;
+            top: 15px;
         }
         
         #scoreBoard {
-            font-size: 12px;
-            padding: 6px 10px;
+            font-size: 14px;
+            padding: 8px 12px;
+            top: 70px;
+            left: 8px;
         }
         
         #levelIndicator {
             font-size: 14px;
-            padding: 6px 12px;
+            padding: 8px 12px;
+            top: 70px;
+            right: 8px;
         }
         
         .control-btn {
-            width: 70px;
-            height: 70px;
-            font-size: 28px;
+            width: 80px;
+            height: 80px;
+            font-size: 32px;
         }
         
         #controls {
-            bottom: 30px;
-            gap: 20px;
+            bottom: 40px;
+            gap: 25px;
+        }
+        
+        body {
+            height: 100vh;
+            overflow: hidden;
         }
     }
     #gameOver {
