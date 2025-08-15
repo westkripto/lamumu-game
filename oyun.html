@@ -16,6 +16,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        will-change: transform;
     }
     #gameContainer {
         position: relative;
@@ -26,6 +29,9 @@
         border-radius: 15px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         overflow: hidden;
+        will-change: transform;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
     }
     #gameTitle {
         position: absolute;
@@ -91,21 +97,7 @@
 
     #scoreBoard {
         position: absolute;
-        top: 80px;
-        left: 10px;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        background-color: rgba(0,0,0,0.8);
-        padding: 10px 15px;
-        border-radius: 10px;
-        z-index: 15;
-        backdrop-filter: blur(5px);
-        border: 2px solid rgba(255,255,255,0.3);
-    }
-    #levelIndicator {
-        position: absolute;
-        top: 80px;
+        top: 20px;
         right: 10px;
         color: white;
         font-size: 16px;
@@ -116,7 +108,9 @@
         z-index: 15;
         backdrop-filter: blur(5px);
         border: 2px solid rgba(255,255,255,0.3);
+        text-align: right;
     }
+
     #controls {
         position: absolute;
         bottom: 20px;
@@ -172,16 +166,11 @@
         #scoreBoard {
             font-size: 12px;
             padding: 6px 10px;
-            top: 60px;
-            left: 5px;
-        }
-        
-        #levelIndicator {
-            font-size: 12px;
-            padding: 6px 10px;
-            top: 60px;
+            top: 20px;
             right: 5px;
         }
+        
+
         
         .control-btn {
             width: 60px;
@@ -248,9 +237,12 @@
 <div id="gameContainer">
     <div id="gameArea">
         <div id="ground"></div>
-        <div id="levelIndicator">Seviye 1</div>
+
         <img id="player" src="moo.png" alt="İnek">
-        <div id="scoreBoard">Puan: 0 | Süre: 0</div>
+        <div id="scoreBoard">
+            <div>Puan: 0</div>
+            <div>Süre: 0</div>
+        </div>
         <div id="controls">
             <div class="control-btn" id="leftBtn">←</div>
             <div class="control-btn" id="rightBtn">→</div>
@@ -411,17 +403,13 @@ function spawnMilk() {
                 score += 5; // +5 points instead of speed boost
                 let seconds = Math.floor(gameTimeMs / 1000);
                 let milliseconds = Math.floor((gameTimeMs % 1000) / 10);
-                scoreBoard.textContent = `Puan: ${score} | Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')}`;
+                scoreBoard.innerHTML = `<div>Puan: ${score}</div><div>Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')}</div>`;
                 
                 // Speed up every 10 bottles
                 if (score % 10 === 0) {
                     milkSpeed += 1;
                     milkSpawnRate = Math.max(200, milkSpawnRate - 100);
                     redMilkChance = Math.min(0.7, redMilkChance + 0.08);
-                    
-                    // Update level indicator
-                    let level = Math.floor(score / 10) + 1;
-                    levelIndicator.textContent = `Seviye ${level}`;
                     
                     // Clear existing interval and restart with new rate
                     clearInterval(milkInterval);
@@ -432,17 +420,13 @@ function spawnMilk() {
                 score++;
                 let seconds = Math.floor(gameTimeMs / 1000);
                 let milliseconds = Math.floor((gameTimeMs % 1000) / 10);
-                scoreBoard.textContent = `Puan: ${score} | Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')}`;
+                scoreBoard.innerHTML = `<div>Puan: ${score}</div><div>Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')}</div>`;
                 
                 // Speed up every 10 bottles
                 if (score % 10 === 0) {
                     milkSpeed += 1;
                     milkSpawnRate = Math.max(200, milkSpawnRate - 100);
                     redMilkChance = Math.min(0.7, redMilkChance + 0.08);
-                    
-                    // Update level indicator
-                    let level = Math.floor(score / 10) + 1;
-                    levelIndicator.textContent = `Seviye ${level}`;
                     
                     // Clear existing interval and restart with new rate
                     clearInterval(milkInterval);
@@ -497,7 +481,7 @@ let timerInterval = setInterval(() => {
     gameTime = Math.floor(gameTimeMs / 1000);
     let seconds = Math.floor(gameTimeMs / 1000);
     let milliseconds = Math.floor((gameTimeMs % 1000) / 10);
-    scoreBoard.textContent = `Puan: ${score} | Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')}`;
+    scoreBoard.innerHTML = `<div>Puan: ${score}</div><div>Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')}</div>`;
 }, 100);
 
 gameLoop();
