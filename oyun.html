@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Süt Toplama Oyunu</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        touch-action: none;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #gameContainer {
+        position: relative;
+        width: 400px;
+        height: 800px;
+        background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 95%, #228B22 95%, #228B22 100%);
+        border: 3px solid #2E7D32;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        overflow: hidden;
+    }
+    #gameTitle {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        z-index: 100;
+        background: #4A90E2;
+        padding: 10px 20px;
+        border-radius: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    #gameArea {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    #ground {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 5%;
+        background-image: url('green.png');
+        background-size: cover;
+        background-repeat: repeat-x;
+        z-index: 1;
+    }
+    #player {
+        position: absolute;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 50px;
+        transition: left 0.1s ease;
+        z-index: 10;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+    .milk {
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        transition: top 0.1s ease;
+        z-index: 5;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    .powerup {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        z-index: 5;
+        animation: glow 1s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+        from { filter: drop-shadow(0 0 5px #FFD700) drop-shadow(0 0 10px #FFD700); }
+        to { filter: drop-shadow(0 0 10px #FFD700) drop-shadow(0 0 20px #FFD700); }
+    }
+
+    #scoreBoard {
+        position: absolute;
+        bottom: 20px;
+        left: 10px;
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        background-color: rgba(0,0,0,0.7);
+        padding: 8px 12px;
+        border-radius: 8px;
+        z-index: 15;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    #levelIndicator {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: rgba(0,0,0,0.7);
+        padding: 8px 16px;
+        border-radius: 20px;
+        z-index: 15;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    #controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 15px;
+        z-index: 15;
+    }
+    .control-btn {
+        width: 50px;
+        height: 50px;
+        background-color: rgba(255,255,255,0.2);
+        border: 2px solid rgba(255,255,255,0.5);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: white;
+        cursor: pointer;
+        user-select: none;
+        touch-action: manipulation;
+        backdrop-filter: blur(5px);
+        transition: all 0.2s ease;
+    }
+    .control-btn:active {
+        background-color: rgba(255,255,255,0.4);
+        transform: scale(0.95);
+    }
+    @media (min-width: 768px) {
+        #controls {
+            display: none;
+        }
+    }
+    #gameOver {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0,0,0,0.9);
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        display: none;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+        border: 3px solid rgba(255,255,255,0.3);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        min-width: 300px;
+    }
+    #restartBtn {
+        background: linear-gradient(45deg, #4CAF50, #45a049);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    #restartBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+    .speedBoost {
+        animation: speedBoost 0.5s ease-in-out;
+    }
+    @keyframes speedBoost {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+</style>
+</head>
+<body>
+
+<div id="gameTitle">🥛 LAMUMU MILK GAME 🥛</div>
+
+<div id="gameContainer">
+    <div id="gameArea">
+        <div id="ground"></div>
+        <div id="levelIndicator">Seviye 1</div>
+        <img id="player" src="moo.png" alt="İnek">
+        <div id="scoreBoard">Puan: 0 | Süre: 0</div>
+        <div id="controls">
+            <div class="control-btn" id="leftBtn">←</div>
+            <div class="control-btn" id="rightBtn">→</div>
+        </div>
+        <div id="gameOver">
+            <h2>💀 MOO IS DEAD!</h2>
+            <p id="finalScore">Toplam puanın: 0</p>
+            <button id="restartBtn">🔄 Tekrar Oyna</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let player = document.getElementById("player");
+let gameArea = document.getElementById("gameArea");
+let scoreBoard = document.getElementById("scoreBoard");
+let levelIndicator = document.getElementById("levelIndicator");
+let gameOver = document.getElementById("gameOver");
+let finalScore = document.getElementById("finalScore");
+let restartBtn = document.getElementById("restartBtn");
+let leftBtn = document.getElementById("leftBtn");
+let rightBtn = document.getElementById("rightBtn");
+let cowSound = new Audio('moo-sound.m4a');
+
+// Play cow sound function
+function playCowSound() {
+    try {
+        cowSound.currentTime = 0; // Reset to beginning
+        cowSound.play();
+    } catch (e) {
+        console.log("Audio playback failed:", e);
+    }
+}
+
+let score = 0;
+let gameTime = 0;
+let gameTimeMs = 0;
+let playerSpeed = 3;
+let keys = {};
+let gameRunning = true;
+let playerPosition = 50;
+let milkSpeed = 8;
+let milkSpawnRate = 500;
+let redMilkChance = 0.3;
+
+// Keyboard controls
+document.addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+        keys["left"] = true;
+    }
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+        keys["right"] = true;
+    }
+});
+
+document.addEventListener("keyup", e => {
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+        keys["left"] = false;
+    }
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+        keys["right"] = false;
+    }
+});
+
+// Touch controls
+leftBtn.addEventListener("touchstart", e => {
+    e.preventDefault();
+    keys["left"] = true;
+});
+
+leftBtn.addEventListener("touchend", e => {
+    e.preventDefault();
+    keys["left"] = false;
+});
+
+rightBtn.addEventListener("touchstart", e => {
+    e.preventDefault();
+    keys["right"] = true;
+});
+
+rightBtn.addEventListener("touchend", e => {
+    e.preventDefault();
+    keys["right"] = false;
+});
+
+// Mouse controls for desktop
+leftBtn.addEventListener("mousedown", () => keys["left"] = true);
+leftBtn.addEventListener("mouseup", () => keys["left"] = false);
+leftBtn.addEventListener("mouseleave", () => keys["left"] = false);
+rightBtn.addEventListener("mousedown", () => keys["right"] = true);
+rightBtn.addEventListener("mouseup", () => keys["right"] = false);
+rightBtn.addEventListener("mouseleave", () => keys["right"] = false);
+
+
+
+function movePlayer() {
+    if (keys["left"] && playerPosition > 5) {
+        playerPosition -= playerSpeed * 0.5;
+    }
+    if (keys["right"] && playerPosition < 95) {
+        playerPosition += playerSpeed * 0.5;
+    }
+    
+    player.style.left = playerPosition + "%";
+}
+
+function spawnMilk() {
+    if (!gameRunning) return;
+    
+    let milk = document.createElement("img");
+    let isPowerup = Math.random() < 0.05; // 5% chance for powerup
+    let isRed = !isPowerup && Math.random() < redMilkChance; // Only red if not powerup
+    
+    if (isPowerup) {
+        milk.src = "milk.png"; // Use normal milk image for powerup
+        milk.className = "milk powerup";
+        milk.setAttribute("data-type", "powerup");
+    } else if (isRed) {
+        milk.src = "red-milk.png";
+        milk.className = "milk";
+        milk.setAttribute("data-type", "red");
+    } else {
+        milk.src = "milk.png";
+        milk.className = "milk";
+        milk.setAttribute("data-type", "normal");
+    }
+    
+    milk.style.left = Math.random() * 90 + 5 + "%";
+    milk.style.top = "-35px";
+    gameArea.appendChild(milk);
+
+    let fallInterval = setInterval(() => {
+        if (!gameRunning) {
+            clearInterval(fallInterval);
+            return;
+        }
+        
+        let milkTop = parseFloat(milk.style.top);
+        milk.style.top = (milkTop + milkSpeed) + "px";
+
+        let milkRect = milk.getBoundingClientRect();
+        let playerRect = player.getBoundingClientRect();
+
+        // Collision detection
+        if (
+            milkRect.bottom >= playerRect.top &&
+            milkRect.top <= playerRect.bottom &&
+            milkRect.right >= playerRect.left &&
+            milkRect.left <= playerRect.right
+        ) {
+            let milkType = milk.getAttribute("data-type");
+            
+            if (milkType === "red") {
+                // Red milk - game over
+                endGame();
+            } else if (milkType === "powerup") {
+                // Powerup - +5 points
+                score += 5; // +5 points instead of speed boost
+                let seconds = Math.floor(gameTimeMs / 1000);
+                let milliseconds = Math.floor((gameTimeMs % 1000) / 10);
+                scoreBoard.textContent = `Puan: ${score} | Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')}`;
+                
+                // Speed up every 10 bottles
+                if (score % 10 === 0) {
+                    milkSpeed += 1;
+                    milkSpawnRate = Math.max(200, milkSpawnRate - 100);
+                    redMilkChance = Math.min(0.7, redMilkChance + 0.08);
+                    
+                    // Update level indicator
+                    let level = Math.floor(score / 10) + 1;
+                    levelIndicator.textContent = `Seviye ${level}`;
+                    
+                    // Clear existing interval and restart with new rate
+                    clearInterval(milkInterval);
+                    milkInterval = setInterval(spawnMilk, milkSpawnRate);
+                }
+            } else {
+                // Normal milk - score
+                score++;
+                let seconds = Math.floor(gameTimeMs / 1000);
+                let milliseconds = Math.floor((gameTimeMs % 1000) / 10);
+                scoreBoard.textContent = `Puan: ${score} | Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')}`;
+                
+                // Speed up every 10 bottles
+                if (score % 10 === 0) {
+                    milkSpeed += 1;
+                    milkSpawnRate = Math.max(200, milkSpawnRate - 100);
+                    redMilkChance = Math.min(0.7, redMilkChance + 0.08);
+                    
+                    // Update level indicator
+                    let level = Math.floor(score / 10) + 1;
+                    levelIndicator.textContent = `Seviye ${level}`;
+                    
+                    // Clear existing interval and restart with new rate
+                    clearInterval(milkInterval);
+                    milkInterval = setInterval(spawnMilk, milkSpawnRate);
+                }
+            }
+            milk.remove();
+            clearInterval(fallInterval);
+        }
+
+        // Check if milk hits the ground
+        if (milkTop > window.innerHeight * 0.95) {
+            milk.remove();
+            clearInterval(fallInterval);
+        }
+    }, 20);
+}
+
+
+
+function endGame() {
+    gameRunning = false;
+    let seconds = Math.floor(gameTimeMs / 1000);
+    let milliseconds = Math.floor((gameTimeMs % 1000) / 10);
+    finalScore.textContent = `Toplam puanın: ${score} | Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')} saniye`;
+    gameOver.style.display = "block";
+    
+    // Play cow sound
+    playCowSound();
+}
+
+function restartGame() {
+    location.reload();
+}
+
+function gameLoop() {
+    if (gameRunning) {
+        movePlayer();
+    }
+    requestAnimationFrame(gameLoop);
+}
+
+// Event listeners
+restartBtn.addEventListener("click", restartGame);
+
+// Game timers
+let milkInterval = setInterval(spawnMilk, milkSpawnRate);
+let timerInterval = setInterval(() => {
+    if (!gameRunning) return;
+    
+    gameTimeMs += 100;
+    gameTime = Math.floor(gameTimeMs / 1000);
+    let seconds = Math.floor(gameTimeMs / 1000);
+    let milliseconds = Math.floor((gameTimeMs % 1000) / 10);
+    scoreBoard.textContent = `Puan: ${score} | Süre: ${seconds}.${milliseconds.toString().padStart(2, '0')}`;
+}, 100);
+
+gameLoop();
+</script>
+
+</body>
+</html>
